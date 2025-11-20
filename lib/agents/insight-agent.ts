@@ -17,6 +17,10 @@ export interface InsightResult {
   summary: string
   cluster_count: number
   total_documents: number
+  insights_refs?: number[]
+  success_refs?: number[]
+  failure_refs?: number[]
+  outlook_refs?: number[]
 }
 
 export class InsightAgent {
@@ -66,9 +70,10 @@ export class InsightAgent {
 Analyze the following research clusters and search results to provide comprehensive market insights.
 Be specific, data-driven, and actionable. Use the actual search result content to support your insights.
 
-IMPORTANT: Write clean, concise insights WITHOUT including source citations in the text itself.
-Do NOT write things like "출처: ", "according to", "based on source" in your insights.
-Instead, synthesize information from the search results naturally into your analysis.`,
+IMPORTANT:
+1. Write clean, concise insights WITHOUT including source citations in the text itself.
+2. After each section, add a line "참고: [list of document numbers]" to indicate which documents you referenced.
+3. Document numbers refer to the numbered search results (e.g., [1], [2], [3], etc.)`,
       ],
       [
         'user',
@@ -78,22 +83,33 @@ Clusters found:
 {clusters}
 {documentDetails}
 
-Please provide a comprehensive analysis in the following format based on the search results above:
+Please provide a comprehensive analysis in the following format:
 
 ## 핵심 인사이트
-(3-5 key insights as numbered list - based on search results but WITHOUT source citations in text)
+1. First insight
+2. Second insight
+...
+참고: [1, 2, 5]
 
 ## 성공 사례
-(2-3 success stories or best practices - based on search results but WITHOUT source citations in text)
+1. First success case
+2. Second success case
+...
+참고: [3, 7]
 
 ## 실패 사례
-(2-3 failure cases or lessons learned - based on search results but WITHOUT source citations in text)
+1. First failure case
+2. Second failure case
+...
+참고: [4, 8]
 
 ## 향후 시장 전망
-(Market outlook and future trends in 2-3 points - based on search results but WITHOUT source citations in text)
+1. First outlook point
+2. Second outlook point
+...
+참고: [2, 6, 9]
 
-Use Korean for all sections. Be specific and write clean insights without mentioning sources in the text.
-The insights should be based on the search results, but don't explicitly cite them.`,
+Use Korean for all sections. After each section, add a line starting with "참고: " followed by the document numbers in brackets that you referenced for that section.`,
       ],
     ])
 
@@ -113,6 +129,12 @@ The insights should be based on the search results, but don't explicitly cite th
         success_cases: [] as string[],
         failure_cases: [] as string[],
         market_outlook: [] as string[],
+      }
+      const refs = {
+        insights_refs: [] as number[],
+        success_refs: [] as number[],
+        failure_refs: [] as number[],
+        outlook_refs: [] as number[],
       }
 
       let currentSection: keyof typeof sections | null = null
@@ -142,6 +164,17 @@ The insights should be based on the search results, but don't explicitly cite th
           trimmed.includes('Market Outlook')
         ) {
           currentSection = 'market_outlook'
+        }
+        // Extract references
+        else if (trimmed.startsWith('참고:') || trimmed.startsWith('참고 :')) {
+          const refMatch = trimmed.match(/\[([\d,\s]+)\]/)
+          if (refMatch && currentSection) {
+            const numbers = refMatch[1].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n))
+            if (currentSection === 'insights') refs.insights_refs = numbers
+            else if (currentSection === 'success_cases') refs.success_refs = numbers
+            else if (currentSection === 'failure_cases') refs.failure_refs = numbers
+            else if (currentSection === 'market_outlook') refs.outlook_refs = numbers
+          }
         }
         // Add content to current section
         else if (
@@ -175,6 +208,10 @@ The insights should be based on the search results, but don't explicitly cite th
         summary: content,
         cluster_count: clusters.length,
         total_documents: clusters.reduce((sum, c) => sum + c.size, 0),
+        insights_refs: refs.insights_refs,
+        success_refs: refs.success_refs,
+        failure_refs: refs.failure_refs,
+        outlook_refs: refs.outlook_refs,
       }
     } catch (error) {
       console.error('Failed to generate insights:', error)

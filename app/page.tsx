@@ -296,31 +296,35 @@ export default function HomePage() {
                       <div className="group relative inline-block">
                         <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground cursor-help">
                           <span>📚</span>
-                          <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                          <span>참고 자료 ({result.insights.insights_refs?.length || 0}개)</span>
                         </div>
                         {/* Hover Details */}
-                        <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-4">
-                          <div className="grid md:grid-cols-2 gap-3">
-                            {result.clusters.flatMap(cluster =>
-                              (cluster.documents || []).slice(0, 2).map((doc, idx) => (
-                                <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-primary/50 hover:shadow-sm transition-all">
-                                  <a
-                                    href={doc.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm font-medium text-primary hover:underline line-clamp-2 block mb-2"
-                                  >
-                                    {doc.title || '제목 없음'}
-                                  </a>
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>🔗</span>
-                                    <span className="truncate">{doc.source || doc.url}</span>
+                        {result.insights.insights_refs && result.insights.insights_refs.length > 0 && (
+                          <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-4">
+                            <div className="grid md:grid-cols-2 gap-3">
+                              {result.insights.insights_refs.map((refIdx) => {
+                                const doc = result.raw_results[refIdx - 1]
+                                if (!doc) return null
+                                return (
+                                  <div key={refIdx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-primary/50 hover:shadow-sm transition-all">
+                                    <a
+                                      href={doc.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-sm font-medium text-primary hover:underline line-clamp-2 block mb-2"
+                                    >
+                                      [{refIdx}] {doc.title || '제목 없음'}
+                                    </a>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                      <span>🔗</span>
+                                      <span className="truncate">{doc.source || doc.url}</span>
+                                    </div>
                                   </div>
-                                </div>
-                              ))
-                            )}
+                                )
+                              })}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -354,31 +358,35 @@ export default function HomePage() {
                           <div className="group relative inline-block">
                             <div className="flex items-center gap-2 text-sm font-semibold text-green-700 cursor-help">
                               <span>📚</span>
-                              <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                              <span>참고 자료 ({result.insights.success_refs?.length || 0}개)</span>
                             </div>
                             {/* Hover Details */}
-                            <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-green-200 rounded-lg shadow-xl z-50 p-4">
-                              <div className="grid md:grid-cols-2 gap-3">
-                                {result.clusters.flatMap(cluster =>
-                                  (cluster.documents || []).slice(0, 2).map((doc, idx) => (
-                                    <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-green-50 border border-green-200 hover:border-green-400 hover:shadow-sm transition-all">
-                                      <a
-                                        href={doc.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm font-medium text-green-700 hover:underline line-clamp-2 block mb-2"
-                                      >
-                                        {doc.title || '제목 없음'}
-                                      </a>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <span>🔗</span>
-                                        <span className="truncate">{doc.source || doc.url}</span>
+                            {result.insights.success_refs && result.insights.success_refs.length > 0 && (
+                              <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-green-200 rounded-lg shadow-xl z-50 p-4">
+                                <div className="grid md:grid-cols-2 gap-3">
+                                  {result.insights.success_refs.map((refIdx) => {
+                                    const doc = result.raw_results[refIdx - 1]
+                                    if (!doc) return null
+                                    return (
+                                      <div key={refIdx} className="p-3 rounded-lg bg-green-50 border border-green-200 hover:border-green-400 hover:shadow-sm transition-all">
+                                        <a
+                                          href={doc.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-sm font-medium text-green-700 hover:underline line-clamp-2 block mb-2"
+                                        >
+                                          [{refIdx}] {doc.title || '제목 없음'}
+                                        </a>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                          <span>🔗</span>
+                                          <span className="truncate">{doc.source || doc.url}</span>
+                                        </div>
                                       </div>
-                                    </div>
-                                  ))
-                                )}
+                                    )
+                                  })}
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                         </div>
                       </CardContent>
@@ -411,31 +419,35 @@ export default function HomePage() {
                           <div className="group relative inline-block">
                             <div className="flex items-center gap-2 text-sm font-semibold text-red-700 cursor-help">
                               <span>📚</span>
-                              <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                              <span>참고 자료 ({result.insights.failure_refs?.length || 0}개)</span>
                             </div>
                             {/* Hover Details */}
-                            <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-red-200 rounded-lg shadow-xl z-50 p-4">
-                              <div className="grid md:grid-cols-2 gap-3">
-                                {result.clusters.flatMap(cluster =>
-                                  (cluster.documents || []).slice(0, 2).map((doc, idx) => (
-                                    <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-red-50 border border-red-200 hover:border-red-400 hover:shadow-sm transition-all">
-                                      <a
-                                        href={doc.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm font-medium text-red-700 hover:underline line-clamp-2 block mb-2"
-                                      >
-                                        {doc.title || '제목 없음'}
-                                      </a>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <span>🔗</span>
-                                        <span className="truncate">{doc.source || doc.url}</span>
+                            {result.insights.failure_refs && result.insights.failure_refs.length > 0 && (
+                              <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-red-200 rounded-lg shadow-xl z-50 p-4">
+                                <div className="grid md:grid-cols-2 gap-3">
+                                  {result.insights.failure_refs.map((refIdx) => {
+                                    const doc = result.raw_results[refIdx - 1]
+                                    if (!doc) return null
+                                    return (
+                                      <div key={refIdx} className="p-3 rounded-lg bg-red-50 border border-red-200 hover:border-red-400 hover:shadow-sm transition-all">
+                                        <a
+                                          href={doc.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-sm font-medium text-red-700 hover:underline line-clamp-2 block mb-2"
+                                        >
+                                          [{refIdx}] {doc.title || '제목 없음'}
+                                        </a>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                          <span>🔗</span>
+                                          <span className="truncate">{doc.source || doc.url}</span>
+                                        </div>
                                       </div>
-                                    </div>
-                                  ))
-                                )}
+                                    )
+                                  })}
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                         </div>
                       </CardContent>
@@ -470,31 +482,35 @@ export default function HomePage() {
                         <div className="group relative inline-block">
                           <div className="flex items-center gap-2 text-sm font-semibold text-violet-700 cursor-help">
                             <span>📚</span>
-                            <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                            <span>참고 자료 ({result.insights.outlook_refs?.length || 0}개)</span>
                           </div>
                           {/* Hover Details */}
-                          <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-violet-200 rounded-lg shadow-xl z-50 p-4">
-                            <div className="grid md:grid-cols-2 gap-3">
-                              {result.clusters.flatMap(cluster =>
-                                (cluster.documents || []).slice(0, 2).map((doc, idx) => (
-                                  <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-violet-50 border border-violet-200 hover:border-violet-400 hover:shadow-sm transition-all">
-                                    <a
-                                      href={doc.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-sm font-medium text-violet-700 hover:underline line-clamp-2 block mb-2"
-                                    >
-                                      {doc.title || '제목 없음'}
-                                    </a>
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <span>🔗</span>
-                                      <span className="truncate">{doc.source || doc.url}</span>
+                          {result.insights.outlook_refs && result.insights.outlook_refs.length > 0 && (
+                            <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-violet-200 rounded-lg shadow-xl z-50 p-4">
+                              <div className="grid md:grid-cols-2 gap-3">
+                                {result.insights.outlook_refs.map((refIdx) => {
+                                  const doc = result.raw_results[refIdx - 1]
+                                  if (!doc) return null
+                                  return (
+                                    <div key={refIdx} className="p-3 rounded-lg bg-violet-50 border border-violet-200 hover:border-violet-400 hover:shadow-sm transition-all">
+                                      <a
+                                        href={doc.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm font-medium text-violet-700 hover:underline line-clamp-2 block mb-2"
+                                      >
+                                        [{refIdx}] {doc.title || '제목 없음'}
+                                      </a>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <span>🔗</span>
+                                        <span className="truncate">{doc.source || doc.url}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                ))
-                              )}
+                                  )
+                                })}
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>

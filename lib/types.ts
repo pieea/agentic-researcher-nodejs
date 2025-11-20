@@ -32,6 +32,10 @@ export interface InsightInfo {
   summary: string
   cluster_count: number
   total_documents: number
+  insights_refs?: number[]
+  success_refs?: number[]
+  failure_refs?: number[]
+  outlook_refs?: number[]
 }
 
 export interface SearchResult {
