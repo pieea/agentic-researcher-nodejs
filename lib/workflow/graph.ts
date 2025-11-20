@@ -159,7 +159,11 @@ export function createResearchWorkflow(settings: Settings) {
     console.log('Insight node: generating insights')
 
     try {
-      const insights = await insightAgent.generateInsights(state.query, state.clusters)
+      const insights = await insightAgent.generateInsights(
+        state.query,
+        state.clusters,
+        state.raw_results
+      )
 
       return {
         insights,
@@ -184,7 +188,7 @@ export function createResearchWorkflow(settings: Settings) {
   }
 
   // Build graph
-  const workflow = new StateGraph({
+  const workflow = new StateGraph<ResearchState>({
     channels: {
       query: null,
       raw_results: null,

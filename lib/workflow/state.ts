@@ -22,4 +22,5 @@ export interface ResearchState {
   insights: Partial<InsightResult>
   status: ResearchStatus
   error?: string
+  [key: string]: any
 }

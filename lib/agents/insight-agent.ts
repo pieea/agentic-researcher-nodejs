@@ -33,7 +33,8 @@ export class InsightAgent {
 
   async generateInsights(
     query: string,
-    clusters: ClusterInfo[]
+    clusters: ClusterInfo[],
+    rawResults?: any[]
   ): Promise<InsightResult> {
     console.log(`Generating insights for query: ${query}`)
 
@@ -45,12 +46,25 @@ export class InsightAgent {
       )
       .join('\n')
 
+    // Prepare document details from raw results
+    let documentDetails = ''
+    if (rawResults && rawResults.length > 0) {
+      documentDetails = '\n\n## 검색 결과 상세 내용\n\n' + rawResults
+        .map((doc, idx) => {
+          return `### [${idx + 1}] ${doc.title}
+출처: ${doc.source || doc.url}
+내용: ${doc.content}
+---`
+        })
+        .join('\n\n')
+    }
+
     const prompt = ChatPromptTemplate.fromMessages([
       [
         'system',
         `You are an expert market research analyst.
-Analyze the following research clusters and provide comprehensive market insights.
-Be specific, data-driven, and actionable.`,
+Analyze the following research clusters and search results to provide comprehensive market insights.
+Be specific, data-driven, and actionable. Use the actual search result content to support your insights.`,
       ],
       [
         'user',
@@ -58,28 +72,33 @@ Be specific, data-driven, and actionable.`,
 
 Clusters found:
 {clusters}
+{documentDetails}
 
-Please provide a comprehensive analysis in the following format:
+Please provide a comprehensive analysis in the following format based on the search results above:
 
 ## 핵심 인사이트
-(3-5 key insights as numbered list)
+(3-5 key insights as numbered list - cite specific findings from the search results)
 
 ## 성공 사례
-(2-3 success stories or best practices)
+(2-3 success stories or best practices - reference specific examples from the search results)
 
 ## 실패 사례
-(2-3 failure cases or lessons learned)
+(2-3 failure cases or lessons learned - reference specific examples from the search results)
 
 ## 향후 시장 전망
-(Market outlook and future trends in 2-3 points)
+(Market outlook and future trends in 2-3 points - based on the search results)
 
-Use Korean for all sections. Be specific and concise.`,
+Use Korean for all sections. Be specific and cite the search results to support your insights.`,
       ],
     ])
 
     try {
       const response = await this.llm.invoke(
-        await prompt.formatMessages({ query, clusters: clusterSummary })
+        await prompt.formatMessages({
+          query,
+          clusters: clusterSummary,
+          documentDetails
+        })
       )
 
       // Parse response into sections
