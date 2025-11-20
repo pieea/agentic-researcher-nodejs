@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:8080'
+import { getWorkflowState } from '@/lib/storage'
 
 export async function GET(
   request: NextRequest,
@@ -9,19 +8,24 @@ export async function GET(
   try {
     const { requestId } = await params
 
-    const response = await fetch(`${BACKEND_API_URL}/api/research/${requestId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    const state = getWorkflowState(requestId)
 
-    if (!response.ok) {
-      throw new Error(`Backend API error: ${response.statusText}`)
+    if (!state) {
+      return NextResponse.json(
+        { error: 'Research request not found' },
+        { status: 404 }
+      )
     }
 
-    const data = await response.json()
-    return NextResponse.json(data)
+    return NextResponse.json({
+      request_id: requestId,
+      query: state.query,
+      status: state.status,
+      raw_results: state.raw_results || [],
+      clusters: state.clusters || [],
+      insights: state.insights || {},
+      error: state.error,
+    })
   } catch (error) {
     console.error('API route error:', error)
     return NextResponse.json(

@@ -58,7 +58,8 @@ const nextConfig: NextConfig = {
 
   // Environment variables validation
   env: {
-    BACKEND_API_URL: process.env.BACKEND_API_URL,
+    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
 
   // Disable powered-by header

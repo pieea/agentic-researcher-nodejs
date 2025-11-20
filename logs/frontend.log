@@ -20,3 +20,16 @@
  POST /api/research 200 in 4.3s (compile: 138ms, render: 4.1s)
  GET /api/research/37/stream 200 in 32.7s (compile: 514ms, render: 32.2s)
  GET /api/research/37 200 in 525ms (compile: 518ms, render: 7ms)
+ GET / 200 in 95ms (compile: 60ms, render: 35ms)
+   Reload env: .env
+ GET / 200 in 43ms (compile: 28ms, render: 15ms)
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 16.0.3 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://192.168.219.169:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 543ms
+ GET / 200 in 2.1s (compile: 1940ms, render: 152ms)
+[?25h

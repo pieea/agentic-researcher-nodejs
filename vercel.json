@@ -6,7 +6,8 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
-    "BACKEND_API_URL": "@backend-api-url",
+    "TAVILY_API_KEY": "@tavily-api-key",
+    "OPENAI_API_KEY": "@openai-api-key",
     "NEXT_PUBLIC_APP_URL": "@next-public-app-url"
   },
   "headers": [
