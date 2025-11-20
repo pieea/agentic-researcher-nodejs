@@ -544,7 +544,7 @@ export default function HomePage() {
 
             {/* Cluster Details */}
             <div>
-              <h3 className="text-xl font-bold mb-4">상세 클러스터</h3>
+              <h3 className="text-xl font-bold mb-4">클러스터 별 상세</h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {result.clusters.map((cluster) => (
                   <Card key={cluster.id} className="shadow-md hover:shadow-lg transition-shadow">

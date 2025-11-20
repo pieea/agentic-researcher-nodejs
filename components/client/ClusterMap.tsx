@@ -146,7 +146,7 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
       .data(data.nodes)
       .enter()
       .append('text')
-      .text((d: any) => d.label)
+      .text((d: any) => `${d.label} (${d.value}개)`)
       .attr('font-size', 14)
       .attr('font-weight', 600)
       .attr('fill', 'hsl(var(--foreground))')
