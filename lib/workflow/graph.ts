@@ -1,8 +1,8 @@
-import { StateGraph, END } from '@langchain/langgraph'
+import { StateGraph, END, Annotation } from '@langchain/langgraph'
 import { ResearchState } from './state'
-import { SearchAgent } from '../agents/search-agent'
+import { SearchAgent, SearchResult } from '../agents/search-agent'
 import { AnalysisAgent } from '../agents/analysis-agent'
-import { InsightAgent, ClusterInfo } from '../agents/insight-agent'
+import { InsightAgent, ClusterInfo, InsightResult } from '../agents/insight-agent'
 
 interface Settings {
   tavily_api_key: string
@@ -40,6 +40,7 @@ export function createResearchWorkflow(settings: Settings) {
       }
 
       console.log(`Found ${results.length} results`)
+      console.log(`Sample result:`, results[0])
       return {
         raw_results: results,
         status: 'search_completed',
@@ -55,6 +56,7 @@ export function createResearchWorkflow(settings: Settings) {
 
   async function analysisNode(state: ResearchState): Promise<Partial<ResearchState>> {
     console.log('Analysis node: generating embeddings')
+    console.log(`Raw results count in analysis node: ${state.raw_results?.length || 0}`)
 
     try {
       // Check if we have results to analyze
@@ -140,6 +142,9 @@ export function createResearchWorkflow(settings: Settings) {
         status = 'clustering_skipped'
       }
 
+      console.log(`Analysis complete: ${clusters.length} clusters, ${embeddings.length} embeddings`)
+      console.log(`Clusters:`, clusters.map(c => ({ name: c.name, size: c.size, docs: c.documents?.length || 0 })))
+
       return {
         embeddings,
         cluster_labels: clusterLabels,
@@ -157,6 +162,8 @@ export function createResearchWorkflow(settings: Settings) {
 
   async function insightNode(state: ResearchState): Promise<Partial<ResearchState>> {
     console.log('Insight node: generating insights')
+    console.log(`Clusters count: ${state.clusters?.length || 0}`)
+    console.log(`Raw results count: ${state.raw_results?.length || 0}`)
 
     try {
       const insights = await insightAgent.generateInsights(
@@ -164,6 +171,13 @@ export function createResearchWorkflow(settings: Settings) {
         state.clusters,
         state.raw_results
       )
+
+      console.log(`Generated insights:`, {
+        insights: insights.insights?.length || 0,
+        success_cases: insights.success_cases?.length || 0,
+        failure_cases: insights.failure_cases?.length || 0,
+        market_outlook: insights.market_outlook?.length || 0
+      })
 
       return {
         insights,
@@ -187,19 +201,19 @@ export function createResearchWorkflow(settings: Settings) {
     return 'continue'
   }
 
-  // Build graph
-  const workflow = new StateGraph<ResearchState>({
-    channels: {
-      query: null,
-      raw_results: null,
-      embeddings: null,
-      cluster_labels: null,
-      clusters: null,
-      insights: null,
-      status: null,
-      error: null,
-    },
+  // Build graph using Annotation
+  const ResearchStateAnnotation = Annotation.Root({
+    query: Annotation<string>,
+    raw_results: Annotation<SearchResult[]>,
+    embeddings: Annotation<number[][] | undefined>,
+    cluster_labels: Annotation<number[] | undefined>,
+    clusters: Annotation<ClusterInfo[]>,
+    insights: Annotation<Partial<InsightResult>>,
+    status: Annotation<ResearchState['status']>,
+    error: Annotation<string | undefined>,
   })
+
+  const workflow = new StateGraph(ResearchStateAnnotation)
 
   // Add nodes
   workflow.addNode('search', searchNode)
@@ -207,13 +221,13 @@ export function createResearchWorkflow(settings: Settings) {
   workflow.addNode('insight', insightNode)
 
   // Define edges with conditional routing
-  workflow.setEntryPoint('search')
-  workflow.addConditionalEdges('search', shouldContinueAfterSearch, {
+  ;(workflow as any).setEntryPoint('search')
+  ;(workflow as any).addConditionalEdges('search', shouldContinueAfterSearch, {
     continue: 'analysis',
     end: END,
   })
-  workflow.addEdge('analysis', 'insight')
-  workflow.addEdge('insight', END)
+  ;(workflow as any).addEdge('analysis', 'insight')
+  ;(workflow as any).addEdge('insight', END)
 
   return workflow.compile()
 }

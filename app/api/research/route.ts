@@ -68,14 +68,14 @@ async function executeWorkflow(requestId: string, query: string) {
     console.log(`[${requestId}] Starting workflow execution`)
 
     // Execute workflow with streaming to capture intermediate states
-    for await (const output of await workflow.stream(initialState)) {
+    for await (const output of await workflow.stream(initialState as any)) {
       // LangGraph stream returns dict with node name as key
       for (const [nodeName, nodeState] of Object.entries(output)) {
-        const currentStatus = (nodeState as ResearchState).status || 'unknown'
+        const currentStatus = (nodeState as any).status || 'unknown'
         console.log(`[${requestId}] Node '${nodeName}' completed with status: ${currentStatus}`)
 
         // Update workflow state in real-time
-        setWorkflowState(requestId, nodeState as ResearchState)
+        setWorkflowState(requestId, nodeState as any)
 
         // Small delay to ensure SSE can catch the update
         await new Promise((resolve) => setTimeout(resolve, 500))

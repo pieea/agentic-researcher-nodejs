@@ -17,6 +17,13 @@ export async function GET(
       )
     }
 
+    console.log(`[${requestId}] Returning final state:`, {
+      status: state.status,
+      raw_results_count: state.raw_results?.length || 0,
+      clusters_count: state.clusters?.length || 0,
+      insights_available: !!state.insights
+    })
+
     return NextResponse.json({
       request_id: requestId,
       query: state.query,

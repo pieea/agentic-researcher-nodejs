@@ -64,7 +64,11 @@ export class InsightAgent {
         'system',
         `You are an expert market research analyst.
 Analyze the following research clusters and search results to provide comprehensive market insights.
-Be specific, data-driven, and actionable. Use the actual search result content to support your insights.`,
+Be specific, data-driven, and actionable. Use the actual search result content to support your insights.
+
+IMPORTANT: Write clean, concise insights WITHOUT including source citations in the text itself.
+Do NOT write things like "출처: ", "according to", "based on source" in your insights.
+Instead, synthesize information from the search results naturally into your analysis.`,
       ],
       [
         'user',
@@ -77,18 +81,19 @@ Clusters found:
 Please provide a comprehensive analysis in the following format based on the search results above:
 
 ## 핵심 인사이트
-(3-5 key insights as numbered list - cite specific findings from the search results)
+(3-5 key insights as numbered list - based on search results but WITHOUT source citations in text)
 
 ## 성공 사례
-(2-3 success stories or best practices - reference specific examples from the search results)
+(2-3 success stories or best practices - based on search results but WITHOUT source citations in text)
 
 ## 실패 사례
-(2-3 failure cases or lessons learned - reference specific examples from the search results)
+(2-3 failure cases or lessons learned - based on search results but WITHOUT source citations in text)
 
 ## 향후 시장 전망
-(Market outlook and future trends in 2-3 points - based on the search results)
+(Market outlook and future trends in 2-3 points - based on search results but WITHOUT source citations in text)
 
-Use Korean for all sections. Be specific and cite the search results to support your insights.`,
+Use Korean for all sections. Be specific and write clean insights without mentioning sources in the text.
+The insights should be based on the search results, but don't explicitly cite them.`,
       ],
     ])
 
