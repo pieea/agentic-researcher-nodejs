@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createResearchWorkflow } from '@/lib/workflow/graph'
 import { ResearchState } from '@/lib/workflow/state'
-import { setWorkflowState } from '@/lib/storage'
+import { setWorkflowState, getWorkflowState } from '@/lib/storage'
 import { randomUUID } from 'crypto'
 
 export async function POST(request: NextRequest) {
@@ -74,8 +74,21 @@ async function executeWorkflow(requestId: string, query: string) {
         const currentStatus = (nodeState as any).status || 'unknown'
         console.log(`[${requestId}] Node '${nodeName}' completed with status: ${currentStatus}`)
 
+        // Merge with existing state instead of overwriting
+        const existingState = getWorkflowState(requestId) || initialState
+        const mergedState = {
+          ...existingState,
+          ...(nodeState as any)
+        }
+
+        console.log(`[${requestId}] Merged state:`, {
+          raw_results: mergedState.raw_results?.length || 0,
+          clusters: mergedState.clusters?.length || 0,
+          status: mergedState.status
+        })
+
         // Update workflow state in real-time
-        setWorkflowState(requestId, nodeState as any)
+        setWorkflowState(requestId, mergedState)
 
         // Small delay to ensure SSE can catch the update
         await new Promise((resolve) => setTimeout(resolve, 500))
