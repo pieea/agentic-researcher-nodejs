@@ -54,7 +54,7 @@ async function executeWorkflow(requestId: string, query: string) {
     const workflow = createResearchWorkflow({
       tavily_api_key: process.env.TAVILY_API_KEY!,
       openai_api_key: process.env.OPENAI_API_KEY!,
-      max_search_results: 30,
+      max_search_results: 60,
     })
 
     const initialState: ResearchState = {

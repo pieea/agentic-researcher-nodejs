@@ -64,12 +64,13 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
     // Color scale
     const color = d3.scaleOrdinal(d3.schemeCategory10)
 
-    // Force simulation
+    // Force simulation with stronger repulsion
     const simulation = d3
       .forceSimulation(data.nodes as any)
-      .force('link', d3.forceLink(data.links).id((d: any) => d.id))
-      .force('charge', d3.forceManyBody().strength(-100))
+      .force('link', d3.forceLink(data.links).id((d: any) => d.id).distance(150))
+      .force('charge', d3.forceManyBody().strength(-400))
       .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius((d: any) => Math.sqrt(d.value) * 10 + 20))
 
     // Links
     const link = svg
@@ -79,8 +80,23 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
       .enter()
       .append('line')
       .attr('stroke', 'hsl(var(--border))')
-      .attr('stroke-opacity', 0.6)
-      .attr('stroke-width', (d: any) => Math.sqrt(d.value))
+      .attr('stroke-opacity', 0.4)
+      .attr('stroke-width', (d: any) => Math.sqrt(d.value) * 1.5)
+
+    // Tooltip
+    const tooltip = d3.select(containerRef.current)
+      .append('div')
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('background-color', 'hsl(var(--popover))')
+      .style('color', 'hsl(var(--popover-foreground))')
+      .style('border', '1px solid hsl(var(--border))')
+      .style('border-radius', '0.5rem')
+      .style('padding', '0.5rem 0.75rem')
+      .style('font-size', '0.875rem')
+      .style('box-shadow', '0 4px 6px -1px rgb(0 0 0 / 0.1)')
+      .style('pointer-events', 'none')
+      .style('z-index', '50')
 
     // Nodes
     const node = svg
@@ -89,8 +105,33 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
       .data(data.nodes)
       .enter()
       .append('circle')
-      .attr('r', (d: any) => Math.sqrt(d.value) * 3)
+      .attr('r', (d: any) => Math.sqrt(d.value) * 8)
       .attr('fill', (d: any) => color(d.group.toString()))
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2)
+      .style('cursor', 'pointer')
+      .style('transition', 'all 0.2s ease')
+      .on('mouseenter', function(event, d: any) {
+        d3.select(this)
+          .attr('r', Math.sqrt(d.value) * 10)
+          .attr('stroke-width', 3)
+
+        tooltip
+          .style('visibility', 'visible')
+          .html(`<strong>${d.label}</strong><br/>${d.value}개 문서`)
+      })
+      .on('mousemove', function(event) {
+        tooltip
+          .style('top', (event.pageY - 10) + 'px')
+          .style('left', (event.pageX + 10) + 'px')
+      })
+      .on('mouseleave', function(event, d: any) {
+        d3.select(this)
+          .attr('r', Math.sqrt(d.value) * 8)
+          .attr('stroke-width', 2)
+
+        tooltip.style('visibility', 'hidden')
+      })
       .call(
         d3.drag<any, any>()
           .on('start', dragstarted)
@@ -106,9 +147,13 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
       .enter()
       .append('text')
       .text((d: any) => d.label)
-      .attr('font-size', 10)
-      .attr('dx', 12)
+      .attr('font-size', 14)
+      .attr('font-weight', 600)
+      .attr('fill', 'hsl(var(--foreground))')
+      .attr('dx', (d: any) => Math.sqrt(d.value) * 8 + 8)
       .attr('dy', 4)
+      .style('pointer-events', 'none')
+      .style('user-select', 'none')
 
     simulation.on('tick', () => {
       link
@@ -141,6 +186,7 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
 
     return () => {
       simulation.stop()
+      tooltip.remove()
     }
   }, [clusters])
 
@@ -153,7 +199,7 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
   }
 
   return (
-    <div ref={containerRef} className="w-full h-full min-h-[500px]">
+    <div ref={containerRef} className="w-full h-full min-h-[500px] relative">
       <svg ref={svgRef} className="w-full h-full" />
     </div>
   )
