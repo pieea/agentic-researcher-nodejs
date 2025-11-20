@@ -1,0 +1,22 @@
+
+> nextjs@0.1.0 dev
+> next dev
+
+   ▲ Next.js 16.0.3 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://192.168.219.169:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 468ms
+ GET / 200 in 1246ms (compile: 1118ms, render: 128ms)
+ GET / 200 in 34ms (compile: 5ms, render: 29ms)
+ GET / 200 in 23ms (compile: 2ms, render: 20ms)
+ GET / 200 in 30ms (compile: 4ms, render: 26ms)
+ ✓ Compiled in 33ms
+ GET / 200 in 40ms (compile: 15ms, render: 25ms)
+ GET / 200 in 35ms (compile: 4ms, render: 32ms)
+ ✓ Compiled in 55ms
+ POST /api/research 200 in 4.3s (compile: 138ms, render: 4.1s)
+ GET /api/research/37/stream 200 in 32.7s (compile: 514ms, render: 32.2s)
+ GET /api/research/37 200 in 525ms (compile: 518ms, render: 7ms)
