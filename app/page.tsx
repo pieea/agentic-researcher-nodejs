@@ -348,6 +348,39 @@ export default function HomePage() {
                             </li>
                           ))}
                         </ul>
+
+                        {/* References */}
+                        <div className="pt-4 border-t border-green-200">
+                          <div className="group relative inline-block">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-green-700 cursor-help">
+                              <span>📚</span>
+                              <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                            </div>
+                            {/* Hover Details */}
+                            <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-green-200 rounded-lg shadow-xl z-50 p-4">
+                              <div className="grid md:grid-cols-2 gap-3">
+                                {result.clusters.flatMap(cluster =>
+                                  (cluster.documents || []).slice(0, 2).map((doc, idx) => (
+                                    <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-green-50 border border-green-200 hover:border-green-400 hover:shadow-sm transition-all">
+                                      <a
+                                        href={doc.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm font-medium text-green-700 hover:underline line-clamp-2 block mb-2"
+                                      >
+                                        {doc.title || '제목 없음'}
+                                      </a>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <span>🔗</span>
+                                        <span className="truncate">{doc.source || doc.url}</span>
+                                      </div>
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   )}
@@ -372,6 +405,39 @@ export default function HomePage() {
                             </li>
                           ))}
                         </ul>
+
+                        {/* References */}
+                        <div className="pt-4 border-t border-red-200">
+                          <div className="group relative inline-block">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-red-700 cursor-help">
+                              <span>📚</span>
+                              <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                            </div>
+                            {/* Hover Details */}
+                            <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-red-200 rounded-lg shadow-xl z-50 p-4">
+                              <div className="grid md:grid-cols-2 gap-3">
+                                {result.clusters.flatMap(cluster =>
+                                  (cluster.documents || []).slice(0, 2).map((doc, idx) => (
+                                    <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-red-50 border border-red-200 hover:border-red-400 hover:shadow-sm transition-all">
+                                      <a
+                                        href={doc.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm font-medium text-red-700 hover:underline line-clamp-2 block mb-2"
+                                      >
+                                        {doc.title || '제목 없음'}
+                                      </a>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <span>🔗</span>
+                                        <span className="truncate">{doc.source || doc.url}</span>
+                                      </div>
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   )}
@@ -398,6 +464,39 @@ export default function HomePage() {
                           </li>
                         ))}
                       </ul>
+
+                      {/* References */}
+                      <div className="pt-4 border-t border-violet-200">
+                        <div className="group relative inline-block">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-violet-700 cursor-help">
+                            <span>📚</span>
+                            <span>참고 자료 ({result.clusters.reduce((acc, c) => acc + Math.min((c.documents || []).length, 2), 0)}개)</span>
+                          </div>
+                          {/* Hover Details */}
+                          <div className="invisible group-hover:visible absolute left-0 top-full mt-2 w-[600px] max-h-80 overflow-y-auto bg-white border border-violet-200 rounded-lg shadow-xl z-50 p-4">
+                            <div className="grid md:grid-cols-2 gap-3">
+                              {result.clusters.flatMap(cluster =>
+                                (cluster.documents || []).slice(0, 2).map((doc, idx) => (
+                                  <div key={`${cluster.id}-${idx}`} className="p-3 rounded-lg bg-violet-50 border border-violet-200 hover:border-violet-400 hover:shadow-sm transition-all">
+                                    <a
+                                      href={doc.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-sm font-medium text-violet-700 hover:underline line-clamp-2 block mb-2"
+                                    >
+                                      {doc.title || '제목 없음'}
+                                    </a>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                      <span>🔗</span>
+                                      <span className="truncate">{doc.source || doc.url}</span>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -411,7 +510,7 @@ export default function HomePage() {
                   <CardTitle>클러스터 맵</CardTitle>
                   <CardDescription>주제별 분포 시각화</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="min-h-[500px]">
                   <ClusterMap clusters={result.clusters} />
                 </CardContent>
               </Card>
@@ -421,7 +520,7 @@ export default function HomePage() {
                   <CardTitle>트렌드 타임라인</CardTitle>
                   <CardDescription>시간별 트렌드 변화</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="min-h-[500px]">
                   <TrendTimeline clusters={result.clusters} />
                 </CardContent>
               </Card>

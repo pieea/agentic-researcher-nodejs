@@ -39,22 +39,27 @@ function transformClustersToGraphData(clusters: ClusterInfo[]): ClusterData {
 
 export function ClusterMap({ clusters }: ClusterMapProps) {
   const svgRef = useRef<SVGSVGElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!svgRef.current || !clusters || clusters.length === 0) return
+    if (!svgRef.current || !containerRef.current || !clusters || clusters.length === 0) return
 
     const data = transformClustersToGraphData(clusters)
 
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    const width = 800
-    const height = 600
+    // Use container dimensions
+    const containerWidth = containerRef.current.clientWidth
+    const width = containerWidth > 0 ? containerWidth : 800
+    const height = 500
 
     const svg = d3
       .select(svgRef.current)
       .attr('width', width)
       .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
 
     // Color scale
     const color = d3.scaleOrdinal(d3.schemeCategory10)
@@ -148,8 +153,8 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
   }
 
   return (
-    <div className="w-full overflow-x-auto">
-      <svg ref={svgRef} />
+    <div ref={containerRef} className="w-full h-full min-h-[500px]">
+      <svg ref={svgRef} className="w-full h-full" />
     </div>
   )
 }
