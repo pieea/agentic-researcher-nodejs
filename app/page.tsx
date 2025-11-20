@@ -61,11 +61,11 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 mb-4">
             <TrendingUp className="h-10 w-10 text-primary" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-              시장 조사 플랫폼
+              Market Trends Analyzer
             </h1>
           </div>
           <p className="text-muted-foreground text-lg">
-            AI 기반 트렌드 분석 및 자동 클러스터링 인사이트
+            AI 기반 트렌드 분석 및 자동 클러스터링
           </p>
         </header>
 

@@ -203,14 +203,35 @@ export function createResearchWorkflow(settings: Settings) {
 
   // Build graph using Annotation
   const ResearchStateAnnotation = Annotation.Root({
-    query: Annotation<string>,
-    raw_results: Annotation<SearchResult[]>,
-    embeddings: Annotation<number[][] | undefined>,
-    cluster_labels: Annotation<number[] | undefined>,
-    clusters: Annotation<ClusterInfo[]>,
-    insights: Annotation<Partial<InsightResult>>,
-    status: Annotation<ResearchState['status']>,
-    error: Annotation<string | undefined>,
+    query: Annotation<string>({
+      reducer: (left, right) => right ?? left,
+      default: () => ''
+    }),
+    raw_results: Annotation<SearchResult[]>({
+      reducer: (left, right) => right ?? left,
+      default: () => []
+    }),
+    embeddings: Annotation<number[][] | undefined>({
+      reducer: (left, right) => right ?? left,
+    }),
+    cluster_labels: Annotation<number[] | undefined>({
+      reducer: (left, right) => right ?? left,
+    }),
+    clusters: Annotation<ClusterInfo[]>({
+      reducer: (left, right) => right ?? left,
+      default: () => []
+    }),
+    insights: Annotation<Partial<InsightResult>>({
+      reducer: (left, right) => right ?? left,
+      default: () => ({})
+    }),
+    status: Annotation<ResearchState['status']>({
+      reducer: (left, right) => right ?? left,
+      default: () => 'initialized'
+    }),
+    error: Annotation<string | undefined>({
+      reducer: (left, right) => right ?? left,
+    }),
   })
 
   const workflow = new StateGraph(ResearchStateAnnotation)
