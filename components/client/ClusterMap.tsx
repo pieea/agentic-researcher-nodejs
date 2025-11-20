@@ -156,6 +156,14 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
       .style('user-select', 'none')
 
     simulation.on('tick', () => {
+      // Constrain nodes within bounds
+      data.nodes.forEach((d: any) => {
+        const radius = Math.sqrt(d.value) * 8
+        const padding = 20
+        d.x = Math.max(radius + padding, Math.min(width - radius - padding, d.x))
+        d.y = Math.max(radius + padding, Math.min(height - radius - padding, d.y))
+      })
+
       link
         .attr('x1', (d: any) => d.source.x)
         .attr('y1', (d: any) => d.source.y)
@@ -174,8 +182,10 @@ export function ClusterMap({ clusters }: ClusterMapProps) {
     }
 
     function dragged(event: any) {
-      event.subject.fx = event.x
-      event.subject.fy = event.y
+      const radius = Math.sqrt(event.subject.value) * 8
+      const padding = 20
+      event.subject.fx = Math.max(radius + padding, Math.min(width - radius - padding, event.x))
+      event.subject.fy = Math.max(radius + padding, Math.min(height - radius - padding, event.y))
     }
 
     function dragended(event: any) {
